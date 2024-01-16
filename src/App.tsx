@@ -14,7 +14,9 @@ import {
   ModalBody,
   useDisclosure,
   Heading,
-  ModalFooter,
+  Flex,
+  Spacer,
+  HStack,
 } from "@chakra-ui/react";
 
 export const App = () => {
@@ -24,6 +26,11 @@ export const App = () => {
   );
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isSummaryOpen,
+    onOpen: onSummaryOpen,
+    onClose: onSummaryClose,
+  } = useDisclosure();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -42,11 +49,14 @@ export const App = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/solve-mystery", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: query }),
-      });
+      const response = await fetch(
+        "https://sgs-genai-omr-api.azurewebsites.net/solve-mystery",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: query }),
+        }
+      );
 
       if (!response.ok) throw new Error("Network response was not ok");
 
@@ -77,15 +87,31 @@ export const App = () => {
       backgroundRepeat="no-repeat"
       minHeight="100vh"
       width="100vw"
+      padding={4}
     >
       <VStack spacing={4}>
-        <Heading as="h1" size="xl" color="pink" fontFamily="Roboto">
-          Let your curiosity guide you...
-        </Heading>
+        <Flex justifyContent="space-between" alignItems="center">
+          <Heading as="h1" size="2xl" color="#fc03d2" fontFamily="Roboto">
+            AI Detective Game
+          </Heading>
+          <HStack spacing={4}>
+            <Button
+              colorScheme="yellow"
+              onClick={onOpen}
+              alignContent="left"
+              marginLeft={800}
+            >
+              How to Play
+            </Button>
+            <Button colorScheme="yellow" onClick={onSummaryOpen}>
+              Case Summary
+            </Button>
+          </HStack>
+        </Flex>
+
         <Box
           w="100%"
           bg="blackAlpha.600"
-          p={4}
           borderRadius="md"
           overflowY="auto"
           maxH="800px"
@@ -105,6 +131,11 @@ export const App = () => {
         </Box>
         <Input
           placeholder="Enter your query about the mystery..."
+          sx={{
+            "::placeholder": {
+              color: "#fca503", // Change this to your desired color
+            },
+          }}
           value={query}
           onChange={handleInputChange}
           color="whiteAlpha.800"
@@ -112,10 +143,7 @@ export const App = () => {
           fontWeight="bold"
         />
         <Button colorScheme="pink" onClick={solveMystery}>
-          Solve Mystery
-        </Button>
-        <Button colorScheme="blue" onClick={onOpen}>
-          How to Play
+          Submit
         </Button>
       </VStack>
 
@@ -130,25 +158,24 @@ export const App = () => {
           <ModalCloseButton />
           <ModalBody>
             <Text fontSize="lg" color="white.400">
-              Greetings, Detectives! As an advanced AI detective assistant, your
-              mission is to assist the investigative team in unraveling the
-              mystery of the vanished Merlion Statue from Marina Bay, Singapore.
-              Your knowledge base includes details about Singapore's landmarks,
-              local culture, and recent events.
+              Greetings, Detectives! your mission is to assist the investigative
+              team in unraveling the mystery of the vanished Merlion Statue from
+              Marina Bay, Singapore. Please read the Case Summary for more
+              details about the incident.
             </Text>
             <Heading as="h4" size="md" color="pink" mt={4}>
               Chatbot Interaction:
             </Heading>
             <Text fontSize="lg" color="white.400">
-              Engage with me, the AI Detective Assistant, by responding to
-              prompts and questions. Use your detective skills to analyze the
-              provided clues and uncover the truth behind the disappearance.
+              Engage with the chatbot, by responding to prompts and questions.
+              Use your detective skills to analyze the provided clues and
+              uncover the truth behind the disappearance.
             </Text>
             <Heading as="h4" size="md" color="pink" mt={4}>
               Clue Analysis::
             </Heading>
             <Text fontSize="lg" color="white.400">
-              Thoroughly examine each of the eight clues provided, ranging from
+              Thoroughly examine each of the clues provided, ranging from
               surveillance footage to social media posts. Collaborate with your
               team to connect the dots and construct a plausible theory about
               the incident.
@@ -187,6 +214,62 @@ export const App = () => {
               diverse perspectives. Think critically and connect the dots
               between different clues. Enjoy the challenge and immerse yourself
               in the investigation process.
+            </Text>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isSummaryOpen} onClose={onSummaryClose}>
+        <ModalOverlay />
+        <ModalContent
+          backgroundColor="rgba(0, 0, 0, 0.5)"
+          color="white"
+          width="500px"
+        >
+          <ModalHeader>Case Summary</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text fontSize="lg" color="white.400">
+              In the heart of Singapore, overlooking the stunning Marina Bay,
+              stood the iconic Merlion Statue—a symbol of the nation's rich
+              heritage and a beloved landmark that had become a source of pride
+              for the city. However, the tranquility of this picturesque scene
+              was shattered when, under the cloak of night, the Merlion
+              mysteriously disappeared, leaving the city in a state of disbelief
+              and confusion. As the news of the statue's disappearance spread
+              like wildfire, a special investigative team was assembled to
+              unravel this peculiar case. The team, comprised of top-notch
+              detectives, was determined to restore the symbol of Singapore to
+              its rightful place and bring the culprit to justice.
+            </Text>
+
+            <Heading as="h4" size="md" color="pink" mt={4}>
+              Clues:
+            </Heading>
+            <Text fontSize="lg" color="white.400">
+              The investigative team has gathered a series of clues, including
+              surveillance footage, interview transcripts, GPS tracking data,
+              social media posts, construction records, maritime activity logs,
+              an anonymous email tip, and local art scene rumors. Each clue
+              plays a crucial role in piecing together the puzzle and revealing
+              the truth.
+            </Text>
+            <Heading as="h4" size="md" color="pink" mt={4}>
+              Your Mission:
+            </Heading>
+            <Text fontSize="lg" color="white.400">
+              Your mission is to uncover the truth behind the disappearance and
+              solve the mystery that has captured the attention of the entire
+              nation.
+            </Text>
+            <Heading as="h4" size="md" color="pink" mt={4}>
+              Your Role:
+            </Heading>
+            <Text fontSize="lg" color="white.400">
+              As participants in this AI Detective Game, you are key members of
+              the investigative team. With the help of this chatbot, ask right
+              questions and you will analyze these clues, make decisions at
+              critical junctures, and formulate a theory that uncovers the
+              motives and methods behind the disappearance of the Merlion.
             </Text>
           </ModalBody>
         </ModalContent>
