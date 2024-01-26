@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import {
   Box,
   Button,
@@ -18,6 +19,10 @@ import {
   Image,
   HStack,
   Spinner,
+  FormControl,
+  FormLabel,
+  ModalFooter,
+  Textarea,
 } from "@chakra-ui/react";
 import Merlion from "./assets/Merlion.png";
 import shslogo from "./assets/singhealth-logo.png";
@@ -29,12 +34,22 @@ export const App = () => {
   );
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isScoreRecieved, setIsScoreRecieved] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isSummaryOpen,
     onOpen: onSummaryOpen,
     onClose: onSummaryClose,
   } = useDisclosure();
+
+  const {
+    isOpen: isSubmitOpen,
+    onOpen: onSubmitOpen,
+    onClose: onSubmitClose,
+  } = useDisclosure();
+
+  const [apiReasonResponse, setApiReasonResponse] = useState("");
+  const [apiScoreResponse, setApiScoreResponse] = useState("");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -89,10 +104,10 @@ export const App = () => {
   const colors = [
     "red.500",
     "orange.500",
-    "yellow.500",
-    "green.500",
+    "white",
+    "pink.500",
     "blue.500",
-    "purple.500",
+    "white",
   ];
 
   useEffect(() => {
@@ -103,27 +118,41 @@ export const App = () => {
     return () => clearInterval(intervalId); // cleanup on unmount
   }, [colorIndex, colors.length]);
 
+  const [submittedvalue, setSubmittedValue] = useState("");
+
+  const handleResponseSubmit = async () => {
+    onSubmitClose();
+    const response = await fetch(
+      "https://sgs-genai-omr-api.azurewebsites.net/similarity_score",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: submittedvalue }),
+      }
+    );
+
+    const data = await response.json();
+    setApiReasonResponse(data.reason);
+    setApiScoreResponse(data.score);
+    setIsScoreRecieved(true);
+  };
+
   return (
     <>
-      <Flex justifyContent="space-between" alignItems="center">
-        <Image src={shslogo} alt="SingHealth Logo" width={180} height={100} />
-        <Text
-          ml={60}
-          fontSize="6xl"
-          fontWeight="bold"
-          color={colors[colorIndex]}
-        >
-          AI Detective Game
-        </Text>
-        <HStack spacing={4}>
-          <Button ml={60} colorScheme="orange" onClick={onOpen}>
-            How to Play
-          </Button>
-          <Button colorScheme="orange" onClick={onSummaryOpen}>
-            Case Summary
-          </Button>
-        </HStack>
-      </Flex>
+      <Image src={shslogo} alt="SingHealth Logo" width={180} height={100} />
+
+      <HStack spacing={4}>
+        <Button ml={6} colorScheme="orange" onClick={onOpen}>
+          How to Play
+        </Button>
+        <Button colorScheme="orange" onClick={onSummaryOpen}>
+          Case Summary
+        </Button>
+        <Button colorScheme="orange" onClick={onSubmitOpen}>
+          Submit Answer
+        </Button>
+      </HStack>
+
       <Box
         backgroundImage={`url(${Merlion})`}
         backgroundSize="cover"
@@ -134,9 +163,17 @@ export const App = () => {
         padding={4}
       >
         <VStack spacing={4}>
+          <Text
+            ml={1}
+            fontSize="4xl"
+            fontWeight="bold"
+            color={colors[colorIndex]}
+          >
+            AI Detective Game
+          </Text>
           <Box
             w="100%"
-            bg="blackAlpha.600"
+            bg="blackAlpha.700"
             borderRadius="md"
             overflowY="auto"
             maxH="800px"
@@ -174,6 +211,26 @@ export const App = () => {
           >
             {isLoading ? <Spinner /> : "Submit"}
           </Button>
+
+          {isScoreRecieved && (
+            <Box
+              bg="blackAlpha.700"
+              w="100%"
+              p={4}
+              fontSize="3xl"
+              fontWeight="bold"
+              color="white"
+            >
+              <Text>
+                Your score is{" "}
+                <Text as="span" color="pink" fontSize="6xl">
+                  {apiScoreResponse}
+                </Text>
+                {", "}
+                {apiReasonResponse.toLowerCase()}
+              </Text>
+            </Box>
+          )}
         </VStack>
 
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -302,6 +359,32 @@ export const App = () => {
                 motives and methods behind the disappearance of the Merlion.
               </Text>
             </ModalBody>
+          </ModalContent>
+        </Modal>
+        <Modal isOpen={isSubmitOpen} onClose={onSubmitClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Enter your final answer</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl>
+                <FormLabel>Response</FormLabel>
+                <Textarea
+                  value={submittedvalue}
+                  size="lg"
+                  minHeight="400px"
+                  onChange={(e) => setSubmittedValue(e.target.value)}
+                />
+              </FormControl>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} onClick={onSummaryClose}>
+                Close
+              </Button>
+              <Button colorScheme="telegram" onClick={handleResponseSubmit}>
+                Submit
+              </Button>
+            </ModalFooter>
           </ModalContent>
         </Modal>
       </Box>
