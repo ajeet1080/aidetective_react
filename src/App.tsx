@@ -34,6 +34,7 @@ export const App = () => {
   );
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isScoreLoading, setIsScoreLoading] = useState(false);
   const [isScoreRecieved, setIsScoreRecieved] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -47,9 +48,10 @@ export const App = () => {
     onOpen: onSubmitOpen,
     onClose: onSubmitClose,
   } = useDisclosure();
-
+  const [teamName, setTeamName] = useState("");
   const [apiReasonResponse, setApiReasonResponse] = useState("");
   const [apiScoreResponse, setApiScoreResponse] = useState("");
+  const [submittedvalue, setSubmittedValue] = useState("");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -67,10 +69,11 @@ export const App = () => {
       return;
     }
     setIsLoading(true);
+    setIsScoreRecieved(false);
 
     try {
       const response = await fetch(
-        "https://sgs-genai-omr-api.azurewebsites.net/solve-mystery",
+        "https://gameapi01.azurewebsites.net/solve-mystery",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -118,23 +121,52 @@ export const App = () => {
     return () => clearInterval(intervalId); // cleanup on unmount
   }, [colorIndex, colors.length]);
 
-  const [submittedvalue, setSubmittedValue] = useState("");
-
   const handleResponseSubmit = async () => {
+    setIsScoreLoading(true);
     onSubmitClose();
-    const response = await fetch(
-      "https://sgs-genai-omr-api.azurewebsites.net/similarity_score",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: submittedvalue }),
-      }
-    );
 
-    const data = await response.json();
-    setApiReasonResponse(data.reason);
-    setApiScoreResponse(data.score);
-    setIsScoreRecieved(true);
+    try {
+      const similarityScoreResponse = await fetch(
+        "https://gameapi01.azurewebsites.net/similarity_score",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: submittedvalue }),
+        }
+      );
+
+      const data = await similarityScoreResponse.json();
+
+      setApiReasonResponse(data.reason);
+      setApiScoreResponse(data.score);
+      setIsScoreRecieved(true);
+
+      const captureResultResponse = await fetch(
+        "https://gameapi01.azurewebsites.net/capture-result",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            teamname: teamName,
+            score: data.score,
+            submitted_text: submittedvalue,
+          }),
+        }
+      );
+
+      const capturedata = await captureResultResponse.json();
+
+      // handle captureResultResponse as needed
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsScoreLoading(false);
+    }
+  };
+
+  const handleSubmitAnswer = async () => {
+    onSubmitOpen();
+    setIsScoreRecieved(false);
   };
 
   return (
@@ -148,7 +180,7 @@ export const App = () => {
         <Button colorScheme="orange" onClick={onSummaryOpen}>
           Case Summary
         </Button>
-        <Button colorScheme="orange" onClick={onSubmitOpen}>
+        <Button colorScheme="orange" onClick={handleSubmitAnswer}>
           Submit Answer
         </Button>
       </HStack>
@@ -171,6 +203,35 @@ export const App = () => {
           >
             AI Detective Game
           </Text>
+          {isScoreLoading ? (
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="orange.500"
+              size="xl"
+            />
+          ) : (
+            isScoreRecieved && (
+              <Box
+                bg="blackAlpha.700"
+                w="100%"
+                p={4}
+                fontSize="3xl"
+                fontWeight="bold"
+                color="white"
+              >
+                <Text>
+                  Your score is{" "}
+                  <Text as="span" color="pink" fontSize="6xl">
+                    {apiScoreResponse}
+                  </Text>
+                  {", "}
+                  {apiReasonResponse.toLowerCase()}
+                </Text>
+              </Box>
+            )
+          )}
           <Box
             w="100%"
             bg="blackAlpha.700"
@@ -209,28 +270,8 @@ export const App = () => {
             onClick={solveMystery}
             isLoading={isLoading}
           >
-            {isLoading ? <Spinner /> : "Submit"}
+            {isLoading ? <Spinner /> : "Enter"}
           </Button>
-
-          {isScoreRecieved && (
-            <Box
-              bg="blackAlpha.700"
-              w="100%"
-              p={4}
-              fontSize="3xl"
-              fontWeight="bold"
-              color="white"
-            >
-              <Text>
-                Your score is{" "}
-                <Text as="span" color="pink" fontSize="6xl">
-                  {apiScoreResponse}
-                </Text>
-                {", "}
-                {apiReasonResponse.toLowerCase()}
-              </Text>
-            </Box>
-          )}
         </VStack>
 
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -367,6 +408,13 @@ export const App = () => {
             <ModalHeader>Enter your final answer</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
+              <FormControl>
+                <FormLabel>Team Name</FormLabel>
+                <Input
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                />
+              </FormControl>
               <FormControl>
                 <FormLabel>Response</FormLabel>
                 <Textarea
