@@ -247,7 +247,7 @@ export const App = () => {
                 >{`You: ${item.query}`}</Text>
                 <Text
                   color="whiteAlpha.800"
-                  fontFamily="cursive"
+                  fontFamily="calibri"
                 >{`AI: ${item.result}`}</Text>
               </VStack>
             ))}
