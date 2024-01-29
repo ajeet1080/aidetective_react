@@ -73,7 +73,7 @@ export const App = () => {
 
     try {
       const response = await fetch(
-        "https://transcribe003.azurewebsites.net/solve-mystery",
+        "https://gameapi01.azurewebsites.net/solve-mystery",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -127,7 +127,7 @@ export const App = () => {
 
     try {
       const similarityScoreResponse = await fetch(
-        "https://transcribe003.azurewebsites.net/similarity_score",
+        "https://gameapi01.azurewebsites.net/similarity_score",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -142,7 +142,7 @@ export const App = () => {
       setIsScoreRecieved(true);
 
       const captureResultResponse = await fetch(
-        "https://transcribe003.azurewebsites.net/capture-result",
+        "https://gameapi01.azurewebsites.net/capture-result",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -217,13 +217,12 @@ export const App = () => {
                 bg="blackAlpha.700"
                 w="100%"
                 p={4}
-                fontSize="3xl"
-                fontWeight="bold"
+                fontSize="xl"
                 color="white"
               >
                 <Text>
                   Your score is{" "}
-                  <Text as="span" color="pink" fontSize="6xl">
+                  <Text as="span" color="pink" fontSize="4xl" fontWeight="bold">
                     {apiScoreResponse}
                   </Text>
                   {", "}
@@ -281,66 +280,54 @@ export const App = () => {
             color="white"
             width="500px"
           >
-            <ModalHeader>How to Play</ModalHeader>
+            <ModalHeader color="pink" fontSize="2xl">
+              How to Play
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Text fontSize="lg" color="white.400">
-                Greetings, Detectives! your mission is to assist the
-                investigative team in unraveling the mystery of the vanished
-                Merlion Statue from Marina Bay, Singapore. Please read the Case
-                Summary for more details about the incident.
+                Greetings, Detectives! You have been activated to assist the
+                police to solve the mystery of the missing Merlion. Please read
+                the Case Summary for more information about the incident.
               </Text>
               <Heading as="h4" size="md" color="pink" mt={4}>
-                Chatbot Interaction:
+                Introduction:
               </Heading>
               <Text fontSize="lg" color="white.400">
-                Engage with the chatbot, by responding to prompts and questions.
-                Use your detective skills to analyze the provided clues and
-                uncover the truth behind the disappearance.
+                The evidence collected by the police have been stored in an
+                encrypted database that can only be extracted by chatting with
+                it. Use your investigative skills to expose the evidence
+                collected and piece together the puzzle and uncover the truth.
               </Text>
               <Heading as="h4" size="md" color="pink" mt={4}>
-                Clue Analysis::
+                Game play:
               </Heading>
               <Text fontSize="lg" color="white.400">
-                Thoroughly examine each of the clues provided, ranging from
-                surveillance footage to social media posts. Collaborate with
-                your team to connect the dots and construct a plausible theory
-                about the incident.
+                Interact with the database using the chatbot, navigating through
+                various stages of the investigation, examining clues,
+                interviewing witnesses, and piecing together the timeline of
+                events leading up to the merlion's disappearance. Replies
+                generated will be based on what the chatbot knows. Although the
+                answers you receive may lead you down unexpected paths, stay
+                sharp and question everything. What appears to be the truth may
+                turn out to be nothing more than a hallucination.
               </Text>
               <Heading as="h4" size="md" color="pink" mt={4}>
-                Team Collaboration::
+                Submitting your Answer:
               </Heading>
               <Text fontSize="lg" color="white.400">
-                Communicate effectively with your team members. Share insights,
-                discuss theories, and build upon each other's observations. Your
-                collective effort is crucial to cracking this case.
+                When you have arrived at your hypothesis of the events, submit
+                your answer. Don’t forget to include: - Who abducted the
+                Merlion? - How did the Merlion disappear? - The motivation
+                behind the heist
               </Text>
-              <Heading as="h4" size="md" color="pink" mt={4}>
-                Theory Formulation::
-              </Heading>
               <Text fontSize="lg" color="white.400">
-                Based on your analysis, formulate a theory regarding how and why
-                the Merlion Statue vanished. Be ready to present your team's
-                theory at the end of the game.
+                -----------------------------------------------------
               </Text>
-              <Heading as="h4" size="md" color="pink" mt={4}>
-                AI Detective Clues:
-              </Heading>
+
               <Text fontSize="lg" color="white.400">
-                I will provide clues that indirectly lead to the solution. These
-                clues are meant to guide your thinking without providing direct
-                answers. Utilize the information wisely and consider all aspects
-                of the case.
-              </Text>
-              <Heading as="h4" size="md" color="pink" mt={4}>
-                Tips for Success::
-              </Heading>
-              <Text fontSize="lg" color="white.400">
-                Pay attention to the cultural context and recent events in
-                Singapore. Collaborate and discuss with your team to gather
-                diverse perspectives. Think critically and connect the dots
-                between different clues. Enjoy the challenge and immerse
-                yourself in the investigation process.
+                Get ready to embark on the ultimate detective adventure and
+                solve the mystery of the missing Merlion!
               </Text>
             </ModalBody>
           </ModalContent>
@@ -352,52 +339,19 @@ export const App = () => {
             color="white"
             width="500px"
           >
-            <ModalHeader>Case Summary</ModalHeader>
+            <ModalHeader color="pink" fontSize="2xl">
+              Case Summary
+            </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Text fontSize="lg" color="white.400">
-                In the heart of Singapore, overlooking the stunning Marina Bay,
-                stood the iconic Merlion Statue—a symbol of the nation's rich
-                heritage and a beloved landmark that had become a source of
-                pride for the city. However, the tranquility of this picturesque
-                scene was shattered when, under the cloak of night, the Merlion
-                mysteriously disappeared, leaving the city in a state of
-                disbelief and confusion. As the news of the statue's
-                disappearance spread like wildfire, a special investigative team
-                was assembled to unravel this peculiar case. The team, comprised
-                of top-notch detectives, was determined to restore the symbol of
-                Singapore to its rightful place and bring the culprit to
-                justice.
-              </Text>
-
-              <Heading as="h4" size="md" color="pink" mt={4}>
-                Clues:
-              </Heading>
-              <Text fontSize="lg" color="white.400">
-                The investigative team has gathered a series of clues, including
-                surveillance footage, interview transcripts, GPS tracking data,
-                social media posts, construction records, maritime activity
-                logs, an anonymous email tip, and local art scene rumors. Each
-                clue plays a crucial role in piecing together the puzzle and
-                revealing the truth.
-              </Text>
-              <Heading as="h4" size="md" color="pink" mt={4}>
-                Your Mission:
-              </Heading>
-              <Text fontSize="lg" color="white.400">
-                Your mission is to uncover the truth behind the disappearance
-                and solve the mystery that has captured the attention of the
-                entire nation.
-              </Text>
-              <Heading as="h4" size="md" color="pink" mt={4}>
-                Your Role:
-              </Heading>
-              <Text fontSize="lg" color="white.400">
-                As participants in this AI Detective Game, you are key members
-                of the investigative team. With the help of this chatbot, ask
-                right questions and you will analyze these clues, make decisions
-                at critical junctures, and formulate a theory that uncovers the
-                motives and methods behind the disappearance of the Merlion.
+                On 2 January 2024 6:23am, the police received a call alerting
+                them to the disappearance of the Merlion Statue along the
+                Singapore River. The police assigned to the case have been
+                unable to solve it and have called you to help them. All the
+                findings from the case have been stored in an encrypted
+                database. The only way to retrieve the clues is to leverage on
+                generative AI to extract out the information.
               </Text>
             </ModalBody>
           </ModalContent>
@@ -426,10 +380,10 @@ export const App = () => {
               </FormControl>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onSummaryClose}>
+              <Button colorScheme="orange" mr={3} onClick={onSummaryClose}>
                 Close
               </Button>
-              <Button colorScheme="telegram" onClick={handleResponseSubmit}>
+              <Button colorScheme="orange" onClick={handleResponseSubmit}>
                 Submit
               </Button>
             </ModalFooter>
