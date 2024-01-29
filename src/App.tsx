@@ -73,7 +73,7 @@ export const App = () => {
 
     try {
       const response = await fetch(
-        "https://gameapi01.azurewebsites.net/solve-mystery",
+        "https://transcribe003.azurewebsites.net/solve-mystery",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -127,7 +127,7 @@ export const App = () => {
 
     try {
       const similarityScoreResponse = await fetch(
-        "https://gameapi01.azurewebsites.net/similarity_score",
+        "https://transcribe003.azurewebsites.net/similarity_score",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -142,7 +142,7 @@ export const App = () => {
       setIsScoreRecieved(true);
 
       const captureResultResponse = await fetch(
-        "https://gameapi01.azurewebsites.net/capture-result",
+        "https://transcribe003.azurewebsites.net/capture-result",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
